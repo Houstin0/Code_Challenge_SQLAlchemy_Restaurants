@@ -1,8 +1,8 @@
-"""create restaurants.db
+"""create restaurant database
 
-Revision ID: d110be92ec46
+Revision ID: b5e33a354194
 Revises: 
-Create Date: 2023-09-04 00:13:32.286042
+Create Date: 2023-09-04 02:00:28.201604
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'd110be92ec46'
+revision: str = 'b5e33a354194'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
