@@ -40,22 +40,21 @@ if __name__=='__main__':
         customers.append(customer)
 
     reviews=[]
-    for rest in restaurants:
+    for restaurant in restaurants:
         for i in range(random.randint(1,5)):
+            customer=random.choice(customers)
+
             review=Review(
-                star_rating=random.randint(0,10),
                 comment=fake.sentence(),
-                restaurant_id=rest.id,
-            )
-            reviews.append(review)
-    for customer in customers:
-        for i in range(random.randint(1,5)):
-            review=Review(
                 star_rating=random.randint(0,10),
-                comment=fake.sentence(),
+                restaurant_id=restaurant.id,
                 customer_id=customer.id
-            )  
-            reviews.append(review)      
+            )
+            if restaurant not in customer.restaurants:
+                customer.reviews.append(review)
+                session.commit()
+            
+           
     session.bulk_save_objects(reviews)
     session.commit()
     session.close()        
