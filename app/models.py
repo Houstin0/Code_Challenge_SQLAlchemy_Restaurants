@@ -1,4 +1,4 @@
-from sqlalchemy import Column,Integer,String,ForeignKey,Table
+from sqlalchemy import Column,Integer,String,ForeignKey,Table,desc
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship,backref
 from sqlalchemy import create_engine
@@ -34,6 +34,13 @@ class Restaurant(Base):
 
     def restaurant_customers(self):
          return[review.customer for review in self.reviews]
+    
+    @classmethod
+    def fanciest(cls):
+        return session.query(cls).order_by(desc(cls.price)).first()
+    
+    def all_reviews(self):
+        return [review.full_review() for review in self.reviews]
         
 
 
@@ -55,10 +62,20 @@ class Customer(Base):
     def customer_restaurants(self):
         return [review.restaurant for review in self.reviews]
     
-    def customer_full_name(self):
+    def full_name(self):
         return f'{self.first_name} {self.last_name}'
     
-    def customer_favor
+    def favorite_restaurant(self):
+        return session.query(Restaurant).join(Review).filter(Review.customer_id==self.id).order_by(desc(Review.star_rating)).first()
+    
+    def add_reviews(self,restaurant,rating):
+        new_review=Review(customer=self,restaurant=restaurant,star_rating=rating)
+        session.add(new_review)
+        session.commit()
+
+    def delete_reviews(restaurant):
+        session.query(Review).filter(Review.customer_id==self.id,Review.restaurant_id==restaurant.id).delete()
+        session.commit()
 
 class Review(Base):
     __tablename__='reviews'
@@ -77,3 +94,7 @@ class Review(Base):
     
     def Review_restaurant(self):
         return self.restaurant
+    
+    def full_review(self):
+        return f'Review for {self.restaurant.name} by {self.customer.full_name()}: {self.star_rating} stars'
+    
