@@ -24,7 +24,7 @@ class Restaurant(Base):
    
 
     def __repr__(self):
-        return f'Restaurant Name: {self.name} Price: {self.price}'
+        return f'Restaurant Name: {self.name} , Price: {self.price}'
     
     def restaurant_reviews(self):
         return self.reviews 
@@ -37,7 +37,6 @@ class Restaurant(Base):
         return session.query(cls).order_by(desc(cls.price)).first()
     
     def all_reviews(self):
-        print ([review.full_review() for review in self.reviews])
         return [review.full_review() for review in self.reviews]
         
 
@@ -53,10 +52,10 @@ class Customer(Base):
 
 
     def __repr__(self):
-        return f'First Name: {self.first_name} Last Name {self.last_name}'
+        return f'First Name: {self.first_name} , Last Name: {self.last_name}'
 
     def customer_reviews(self):
-        return self.reviews
+        return [review for review in self.reviews]
     
     def customer_restaurants(self):
         return [review.restaurant for review in self.reviews]
@@ -67,10 +66,11 @@ class Customer(Base):
     def favorite_restaurant(self):
         return session.query(Restaurant).join(Review).filter(Review.customer_id==self.id).order_by(desc(Review.star_rating)).first()
     
-    def add_reviews(self,restaurant,rating):
+    def add_review(self,restaurant,rating):
         new_review=Review(customer=self,restaurant=restaurant,star_rating=rating)
         session.add(new_review)
         session.commit()
+        print(new_review)
 
     def delete_reviews(self,restaurant):
         session.query(Review).filter(Review.customer_id==self.id,Review.restaurant_id==restaurant.id).delete()
@@ -95,9 +95,10 @@ class Review(Base):
     def review_customer(self):
         return self.customer
     
-    def Review_restaurant(self):
+    def review_restaurant(self):
         return self.restaurant
     
     def full_review(self):
         return f'Review for {self.restaurant.name} by {self.customer.full_name()}: {self.star_rating} stars'
+
     

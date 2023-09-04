@@ -1,1 +1,1 @@
-# Code_Challenge_SQLAlchemy_Restaurants
+# SQLAlchemy_Restaurants

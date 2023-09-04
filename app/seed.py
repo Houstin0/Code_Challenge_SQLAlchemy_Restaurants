@@ -20,7 +20,7 @@ if __name__=='__main__':
     print("seeding.....")
 
     restaurants=[]
-    for i in range(3):
+    for i in range(60):
         restaurant=Restaurant(
             name=fake.name(),
             price=fake.pyint()
@@ -41,18 +41,19 @@ if __name__=='__main__':
 
     reviews=[]
     for restaurant in restaurants:
-        for i in range(random.randint(1,5)):
+        for i in range(random.randint(1,100)):
             customer=random.choice(customers)
 
             review=Review(
                 comment=fake.sentence(),
-                star_rating=random.randint(0,10),
+                star_rating=random.randint(1,10),
                 restaurant_id=restaurant.id,
                 customer_id=customer.id
             )
             if restaurant not in customer.restaurants:
-                customer.reviews.append(review)
+                session.add(review)
                 session.commit()
+                customer.reviews.append(review)
             
            
     session.bulk_save_objects(reviews)
