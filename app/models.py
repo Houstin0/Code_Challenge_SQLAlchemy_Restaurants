@@ -1,21 +1,16 @@
-from sqlalchemy import Column,Integer,String,ForeignKey,Table,desc
+from sqlalchemy import Column,Integer,String,ForeignKey,desc
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship,backref
+from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.associationproxy import association_proxy
 
 engine=create_engine('sqlite:///restaurants.db')
 Session=sessionmaker(bind=engine)
 session=Session()
 Base=declarative_base()
 
-restaurant_customer=Table(
-    'restaurant_customers',
-    Base.metadata,
-    Column('restaurant_id',ForeignKey('restaurants.id'),primary_key=True),
-    Column('customer_id',ForeignKey('customers.id'),primary_key=True),
-    extend_existing=True
-)
+
 
 class Restaurant(Base):
     __tablename__='restaurants'
@@ -23,8 +18,10 @@ class Restaurant(Base):
     id=Column(Integer(),primary_key=True)
     name=Column(String())
     price=Column(Integer())
-    reviews=relationship('Review',backref=backref('restaurant'))
-    customers=relationship('Customer',secondary='reviews',back_populates='restaurants')
+    reviews=relationship('Review',back_populates='restaurant')
+
+    customers=association_proxy('reviews','customer',creator=lambda us: Review(customer=us))
+   
 
     def __repr__(self):
         return f'Restaurant Name: {self.name} Price: {self.price}'
@@ -50,8 +47,9 @@ class Customer(Base):
     id=Column(Integer(),primary_key=True)
     first_name=Column(String())
     last_name=Column(String())
-    reviews=relationship('Review',backref=backref('customer'))
-    restaurants=relationship('Restaurant',secondary='reviews',back_populates='customers')
+    reviews=relationship('Review',back_populates='customer')
+    restaurants=association_proxy('reviews','restaurant',creator=lambda gm: Review(restaurant=gm))
+
 
     def __repr__(self):
         return f'First Name: {self.first_name} Last Name {self.last_name}'
@@ -83,8 +81,12 @@ class Review(Base):
     id=Column(Integer(),primary_key=True)
     comment=Column(String())
     star_rating=Column(Integer())
+
     restaurant_id=Column(Integer(),ForeignKey('restaurants.id'))
     customer_id=Column(Integer(),ForeignKey('customers.id'))
+
+    restaurant=relationship('Restaurant',back_populates='reviews')
+    customer=relationship('Customer',back_populates='reviews')
 
     def __repr__(self):
         return f'Review: {self.comment} star_rating {self.star_rating}'  

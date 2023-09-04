@@ -5,7 +5,7 @@ from models import Base
 
 if __name__ == '__main__':
 
-    engine = create_engine('sqlite:///restaurant.db')
+    engine = create_engine('sqlite:///restaurants.db')
     Base.metadata.create_all(engine)
 
     Session = sessionmaker(bind=engine)
