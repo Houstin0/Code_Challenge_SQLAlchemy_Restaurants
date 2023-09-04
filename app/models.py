@@ -24,7 +24,7 @@ class Restaurant(Base):
     name=Column(String())
     price=Column(Integer())
     reviews=relationship('Review',backref=backref('restaurant'))
-    customers=relationship('Customer',secondary=restaurant_customer,back_populates='restaurants')
+    customers=relationship('Customer',secondary='reviews',back_populates='restaurants')
 
     def __repr__(self):
         return f'Restaurant Name: {self.name} Price: {self.price}'
@@ -51,7 +51,7 @@ class Customer(Base):
     first_name=Column(String())
     last_name=Column(String())
     reviews=relationship('Review',backref=backref('customer'))
-    restaurants=relationship('Restaurant',secondary=restaurant_customer,back_populates='customers')
+    restaurants=relationship('Restaurant',secondary='reviews',back_populates='customers')
 
     def __repr__(self):
         return f'First Name: {self.first_name} Last Name {self.last_name}'
@@ -73,7 +73,7 @@ class Customer(Base):
         session.add(new_review)
         session.commit()
 
-    def delete_reviews(restaurant):
+    def delete_reviews(self,restaurant):
         session.query(Review).filter(Review.customer_id==self.id,Review.restaurant_id==restaurant.id).delete()
         session.commit()
 
