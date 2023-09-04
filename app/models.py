@@ -37,6 +37,7 @@ class Restaurant(Base):
         return session.query(cls).order_by(desc(cls.price)).first()
     
     def all_reviews(self):
+        print ([review.full_review() for review in self.reviews])
         return [review.full_review() for review in self.reviews]
         
 
